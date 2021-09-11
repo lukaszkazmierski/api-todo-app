@@ -1,10 +1,11 @@
 const express = require('express')
 const path = require('path')
+
 const PORT = process.env.PORT || 5000
 
-express()
-  .use(express.static(path.join(__dirname, 'public')))
-  .set('views', path.join(__dirname, 'views'))
-  .set('view engine', 'ejs')
-  .get('/', (req, res) => res.send('API TODO APP'))
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+const app = express();
+
+app.get('/', (req, res) => res.send('API TODO APP'));
+app.listen(PORT, () => {
+  console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
+});
