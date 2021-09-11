@@ -1,7 +1,9 @@
 const express = require('express')
+const mongoose = require("mongoose");
 const path = require('path')
 
 const PORT = process.env.PORT || 5000
+mongoose.connect('mongodb+srv://admin:admin@cluster0.xq5oi.mongodb.net/todoApp?retryWrites=true&w=majority');
 
 const app = express();
 
