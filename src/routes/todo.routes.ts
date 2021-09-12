@@ -1,6 +1,7 @@
 const express = require("express");
 const todosRoutes = express.Router();
-
+const Todo = require("../entities/todo.js");
+const LoremIpsum = require("lorem-ipsum").LoremIpsum;
 let TodoSchema = require("../schemas/todo.schema.ts");
 
 todosRoutes.get('/',function (req, res) {
@@ -53,6 +54,31 @@ todosRoutes.get('/get',function (req, res) {
       res.status(200).json(obj);
     }
   }); 
+});
+
+todosRoutes.get('/getRand/:amount',function (req, res) {
+  const { amount } = req.params;
+
+  const lorem = new LoremIpsum({
+    sentencesPerParagraph: {
+      max: 2,
+      min: 1
+    },
+    wordsPerSentence: {
+      max: 4,
+      min: 2
+    }
+  });
+
+  const todos = [];
+
+  for (let i = 0; i < amount; i++) {
+    const randomNumber = Math.round(Math.random());
+    const todo = new Todo(lorem.generateSentences(5), !!randomNumber);
+    todos.push(todo.toJson());
+  }
+
+  res.status(200).json(todos);
 });
 
 todosRoutes.put('/update/:id',function (req, res) {
