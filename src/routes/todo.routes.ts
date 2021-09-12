@@ -1,5 +1,3 @@
-const PropertyValidator = require("../utils/property-validator.ts");
-
 const express = require("express");
 const todosRoutes = express.Router();
 
@@ -13,8 +11,6 @@ todosRoutes.get('/',function (req, res) {
 
 todosRoutes.post('/create',function (req, res) {
     const todo = TodoSchema(req.body);
-
-    if(PropertyValidator.isValid(todo)) {
       todo.save(function (err) {
         if (err) {
           res.status(400).json({
@@ -23,13 +19,26 @@ todosRoutes.post('/create',function (req, res) {
           });
           return;
         } else {
-          res.status(200);
+          res.status(200).json('Success');
         }
       });
-    } else {
-      res.status(403);
-    }
+
     
+});
+
+todosRoutes.delete('/:id',function (req, res) {
+  const { id } = req.params;
+    TodoSchema.deleteOne({ "_id": id},function (err) {
+      if (err) {
+        res.status(400).json({
+          statusCode: 400,
+          error: err,
+        });
+        return;
+      } else {
+        res.status(200).json('Success');
+      }
+    }); 
 });
 
 
