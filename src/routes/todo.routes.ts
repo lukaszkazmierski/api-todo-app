@@ -41,5 +41,18 @@ todosRoutes.delete('/:id',function (req, res) {
     }); 
 });
 
+todosRoutes.get('/get',function (req, res) {
+  TodoSchema.find({},function (err, obj) {
+    if (err) {
+      res.status(402).json({
+        statusCode: 402,
+        error: err,
+      });
+      return;
+    } else {
+      res.status(200).json(obj);
+    }
+  }); 
+});
 
 module.exports =  todosRoutes;
