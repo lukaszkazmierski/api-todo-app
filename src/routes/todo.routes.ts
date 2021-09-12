@@ -55,4 +55,33 @@ todosRoutes.get('/get',function (req, res) {
   }); 
 });
 
+todosRoutes.put('/update/:id',function (req, res) {
+  const { id } = req.params;
+  const updatedTodo = TodoSchema(req.body);
+  TodoSchema.findOne({ "_id": id},function (err, todo) {
+    if (err) {
+      res.status(402).json({
+        statusCode: 402,
+        error: err,
+      });
+      return;
+    } else {
+      todo.name = updatedTodo.name;
+      todo.isDone = updatedTodo.isDone;
+      todo.save(function (err) {
+        if (err) {
+          res.status(410).json({
+            failure: true,
+            statusCode: 410,
+            error: err,
+          });
+          return;
+        } else {
+          res.status(200).json("Updated was done successfully!");
+        }
+      });
+    }
+  }); 
+});
+
 module.exports =  todosRoutes;
