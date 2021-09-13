@@ -1,4 +1,4 @@
-import { Router } from 'express';
+const Router = require('express').Router;
 import TodoRoutes from './todo.routes'
 
 const routes = Router();

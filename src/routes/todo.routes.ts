@@ -1,4 +1,4 @@
-import { Router } from "express";
+const Router = require('express').Router;
 
 import TodoSchema from "../schemas/todo.schema";
 import Todo from "../entities/todo";
@@ -9,7 +9,7 @@ import { CallbackError } from "mongoose";
 
 const TodosRoutes = Router();
 
-TodosRoutes.get("/", function (req, res) {
+TodosRoutes.get("/", function (req: any, res: any) {
   res.status(400).json(
     new ServerResponse({
       statusCode: 400,
@@ -18,7 +18,7 @@ TodosRoutes.get("/", function (req, res) {
   );
 });
 
-TodosRoutes.get("/get", function (req, res) {
+TodosRoutes.get("/get", function (req: any, res: any) {
   
   TodoSchema.find({}, function (err: CallbackError, todos: any[]) {
     
@@ -42,7 +42,7 @@ TodosRoutes.get("/get", function (req, res) {
   });
 });
 
-TodosRoutes.get("/getRand/:amount", function (req, res) {
+TodosRoutes.get("/getRand/:amount", function (req: any, res: any) {
   let amount = Number(req.params.amount);
 
   if (PropertyValidator.isValid(amount)) {
@@ -72,7 +72,7 @@ TodosRoutes.get("/getRand/:amount", function (req, res) {
   }
 });
 
-TodosRoutes.post("/create", function (req, res) {
+TodosRoutes.post("/create", function (req: any, res: any) {
   const todo = new TodoSchema(req.body);
 
   if (PropertyValidator.isValid(todo)) {
@@ -101,7 +101,7 @@ TodosRoutes.post("/create", function (req, res) {
   }
 });
 
-TodosRoutes.put("/update/:id", function (req, res) {
+TodosRoutes.put("/update/:id", function (req: any, res: any) {
   const id = req.params.id;
 
   const updatedTodo = new Todo({
@@ -143,7 +143,7 @@ TodosRoutes.put("/update/:id", function (req, res) {
   }
 });
 
-TodosRoutes.delete("/:id", function (req, res) {
+TodosRoutes.delete("/:id", function (req: any, res: any) {
   const { id } = req.params;
   if (PropertyValidator.isValid(id)) {
     const result = TodoSchema.deleteOne({ _id: id }, function (err: CallbackError) {
