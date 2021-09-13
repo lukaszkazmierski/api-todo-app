@@ -5,7 +5,7 @@ import routes from './src/routes/routes'
 const cors = require("cors");
 const path = require("path");
 
-mongoose.connect('mongodb+srv://admin:admin@cluster0.xq5oi.mongodb.net/todoApp?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://user:ds2aF21@cluster0.xq5oi.mongodb.net/todoApp?retryWrites=true&w=majority');
 
 const PORT = process.env.PORT || 5000;
 
