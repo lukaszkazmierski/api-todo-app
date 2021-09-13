@@ -1,5 +1,6 @@
-const express = require('express')
-const mongoose = require("mongoose");
+import express from 'express';
+import mongoose from 'mongoose';
+import routes from './src/routes/routes'
 
 const cors = require("cors");
 const path = require("path");
@@ -8,7 +9,6 @@ mongoose.connect('mongodb+srv://admin:admin@cluster0.xq5oi.mongodb.net/todoApp?r
 
 const PORT = process.env.PORT || 5000;
 
-const routes = require('./src/routes/routes.ts')
 
 const app = express();
 app
@@ -17,7 +17,7 @@ app
  .use(express.urlencoded({ extended: true }))
  .use(cors())
  .use(routes)
- .get('/', (req, res) => res.send('API TODO APP'))
+ .get('/', (req: any, res: any) => res.send('API TODO APP'))
  .listen(PORT, () => {
   console.log(`⚡️Server is running at https://localhost:${PORT}`);
 });
