@@ -1,7 +1,7 @@
-const express = require("express");
-const routes = express.Router();
-const todoRoutes = require('./todo.routes.ts');
+import { Router } from 'express';
+import TodoRoutes from './todo.routes'
 
-routes.use('/todos', todoRoutes);
+const routes = Router();
+routes.use('/todos', TodoRoutes);
 
-module.exports = routes;
+export default routes;

@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import * as mongoose from 'mongoose';
 
-const todoSchema = new Schema({
+const todoSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -15,4 +14,5 @@ const todoSchema = new Schema({
     collection: 'todos',
 });
 
-module.exports = mongoose.model('TodoSchema', todoSchema);
+const TodoSchema = mongoose.model('TodoSchema', todoSchema);
+export default TodoSchema;
