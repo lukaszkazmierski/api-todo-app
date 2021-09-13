@@ -1,113 +1,176 @@
-const express = require("express");
-const todosRoutes = express.Router();
-const Todo = require("../entities/todo.js");
-const LoremIpsum = require("lorem-ipsum").LoremIpsum;
-let TodoSchema = require("../schemas/todo.schema.ts");
+import { Router } from "express";
 
-todosRoutes.get('/',function (req, res) {
-    res.status(400).json({
+import TodoSchema from "../schemas/todo.schema";
+import Todo from "../entities/todo";
+import PropertyValidator from "../utils/property-validator";
+import LoremIpsumGenerator from "../utils/lorem-ipsum-generator";
+import ServerResponse from "../core/server/server-response";
+import { CallbackError } from "mongoose";
+import { resourceLimits } from "worker_threads";
+
+const TodosRoutes = Router();
+
+TodosRoutes.get("/", function (req, res) {
+  res.status(400).json(
+    new ServerResponse({
+      statusCode: 400,
       message: "Select the appropriate subroute!",
-    });
+    })
+  );
 });
 
-todosRoutes.post('/create',function (req, res) {
-    const todo = TodoSchema(req.body);
-      todo.save(function (err) {
-        if (err) {
-          res.status(400).json({
-            statusCode: 400,
-            error: err,
-          });
-          return;
-        } else {
-          res.status(200).json('Success');
-        }
-      });
-
+TodosRoutes.get("/get", function (req, res) {
+  
+  TodoSchema.find({}, function (err: CallbackError, todos: any[]) {
     
-});
-
-todosRoutes.delete('/:id',function (req, res) {
-  const { id } = req.params;
-    TodoSchema.deleteOne({ "_id": id},function (err) {
-      if (err) {
-        res.status(400).json({
-          statusCode: 400,
-          error: err,
-        });
-        return;
-      } else {
-        res.status(200).json('Success');
-      }
-    }); 
-});
-
-todosRoutes.get('/get',function (req, res) {
-  TodoSchema.find({},function (err, obj) {
     if (err) {
-      res.status(402).json({
-        statusCode: 402,
-        error: err,
-      });
+      res.status(402).json(
+        new ServerResponse({
+          statusCode: 402,
+          message: err.toString(),
+        })
+      );
       return;
     } else {
-      res.status(200).json(obj);
-    }
-  }); 
-});
-
-todosRoutes.get('/getRand/:amount',function (req, res) {
-  const { amount } = req.params;
-
-  const lorem = new LoremIpsum({
-    sentencesPerParagraph: {
-      max: 2,
-      min: 1
-    },
-    wordsPerSentence: {
-      max: 4,
-      min: 2
+      res.status(200).json(
+        new ServerResponse({
+          statusCode: 200,
+          message: "The data was downloaded correctly",
+          data: todos,
+        })
+      );
     }
   });
-
-  const todos = [];
-
-  for (let i = 0; i < amount; i++) {
-    const randomNumber = Math.round(Math.random());
-    const todo = new Todo(lorem.generateSentences(5), !!randomNumber);
-    todos.push(todo.toJson());
-  }
-
-  res.status(200).json(todos);
 });
 
-todosRoutes.put('/update/:id',function (req, res) {
-  const { id } = req.params;
-  const updatedTodo = TodoSchema(req.body);
-  TodoSchema.findOne({ "_id": id},function (err, todo) {
-    if (err) {
-      res.status(402).json({
-        statusCode: 402,
-        error: err,
+TodosRoutes.get("/getRand/:amount", function (req, res) {
+  let amount = Number(req.params.amount);
+
+  if (PropertyValidator.isValid(amount)) {
+    const todos = [];
+    for (let i = 0; i < amount; i++) {
+      const randomNumber = Math.round(Math.random());
+      const todo = new Todo({
+        name: LoremIpsumGenerator.shortLorem.generateSentences(5),
+        isDone: !!randomNumber,
       });
-      return;
-    } else {
-      todo.name = updatedTodo.name;
-      todo.isDone = updatedTodo.isDone;
-      todo.save(function (err) {
-        if (err) {
-          res.status(410).json({
-            failure: true,
-            statusCode: 410,
-            error: err,
-          });
-          return;
-        } else {
-          res.status(200).json("Updated was done successfully!");
-        }
-      });
+      todos.push(todo.toJson());
     }
-  }); 
+    res.status(200).json(
+      new ServerResponse({
+        statusCode: 200,
+        message: "The data was downloaded correctly",
+        data: todos,
+      })
+    );
+  } else {
+    res.status(502).json(
+      new ServerResponse({
+        statusCode: 502,
+        message: "The specified amount is not correct",
+      })
+    );
+  }
 });
 
-module.exports =  todosRoutes;
+TodosRoutes.post("/create", function (req, res) {
+  const todo = new TodoSchema(req.body);
+
+  if (PropertyValidator.isValid(todo)) {
+    todo.save(function (err: CallbackError) {
+      if (err) {
+        res.status(400).json(
+          new ServerResponse({
+            statusCode: 400,
+            message: err.toString(),
+          })
+        );
+        return;
+      } else {
+        res
+          .status(200)
+          .json(new ServerResponse({ statusCode: 200, message: "Success" }));
+      }
+    });
+  } else {
+    res.status(422).json(
+      new ServerResponse({
+        statusCode: 422,
+        message: "Incorrect data in the given body",
+      })
+    );
+  }
+});
+
+TodosRoutes.put("/update/:id", function (req, res) {
+  const id = req.params.id;
+
+  const updatedTodo = new Todo({
+    name: req.body.name,
+    isDone: req.body.isDone,
+  });
+
+  if (PropertyValidator.isValid(updatedTodo)) {
+    const updateQuery = { $set: updatedTodo.toMap() };
+    TodoSchema.updateOne(
+      { _id: id },
+      updateQuery,
+      null,
+      function (err: CallbackError, updateRes) {
+        if (err) {
+          res.status(402).json(
+            new ServerResponse({
+              statusCode: 402,
+              message: err.toString(),
+            })
+          );
+        } else {
+          res.status(200).json(
+            new ServerResponse({
+              statusCode: 200,
+              message: "Updated was done successfully!",
+            })
+          );
+        }
+      }
+    );
+  } else {
+    res.status(422).json(
+      new ServerResponse({
+        statusCode: 422,
+        message: "Incorrect data in the given body",
+      })
+    );
+  }
+});
+
+TodosRoutes.delete("/:id", function (req, res) {
+  const { id } = req.params;
+  if (PropertyValidator.isValid(id)) {
+    const result = TodoSchema.deleteOne({ _id: id }, function (err: CallbackError) {
+      if (err) {
+        res.status(400).json(
+          new ServerResponse({
+            statusCode: 400,
+            message: err.toString(),
+          })
+        );
+        return;
+      } else {
+        res
+          .status(200)
+          .json(new ServerResponse({ statusCode: 200, message: "The item has been correctly deleted" }));
+      }
+    });
+  } else {
+    res.status(422).json(
+      new ServerResponse({
+        statusCode: 422,
+        message: "Incorrect id",
+      })
+    );
+  }
+  
+});
+
+export default TodosRoutes;
