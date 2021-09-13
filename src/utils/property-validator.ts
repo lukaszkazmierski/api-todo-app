@@ -1,4 +1,4 @@
-class PropertyValidator {
+export default class PropertyValidator {
   static isUndefined = (prop: any): boolean => prop === undefined;
 
   static isNull = (prop: any): boolean => prop === null;
@@ -57,5 +57,3 @@ class PropertyValidator {
     return true;
   }
 }
-
-module.exports = PropertyValidator;
