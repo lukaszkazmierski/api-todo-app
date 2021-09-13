@@ -6,7 +6,6 @@ import PropertyValidator from "../utils/property-validator";
 import LoremIpsumGenerator from "../utils/lorem-ipsum-generator";
 import ServerResponse from "../core/server/server-response";
 import { CallbackError } from "mongoose";
-import { resourceLimits } from "worker_threads";
 
 const TodosRoutes = Router();
 
