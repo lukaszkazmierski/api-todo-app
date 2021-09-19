@@ -13,7 +13,7 @@ Główna ścieżka serwera: [https://api-todo-app-recruitment-task.herokuapp.com
 4. Aktualizacja TODO - _**/update/$IDtodo**_
 5. Usunięcie TODO - _**/$IDtodo**_
 
-Kolekcja endpointów oraz przykładowe zastosowanie jest dostępne do pobrania w sekcji release jako kolekcja postman.
+Kolekcja endpointów oraz przykładowe zastosowanie jest dostępne do pobrania w sekcji release (1.0.0) jako kolekcja postman.
 
 ### Funkcjonalność:
   - Dodawanie
